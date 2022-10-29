@@ -13,7 +13,7 @@ connectToMongo(); //ot returns promise as it si a asynchronous function
 // const cors = require("cors");
 
 app.use(cors({
-  origin: "http://localhost:3000"
+  origin: "http://localhost:5000"
 }))
 
 // to use the req.body we had to use a middleware

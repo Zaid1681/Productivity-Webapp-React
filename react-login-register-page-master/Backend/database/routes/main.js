@@ -35,9 +35,10 @@ router.post('/cal', [ //checking the validation
 ],
     //This will return a bad request of error occurs if the usre put any bad things int he above code
     async (req, res) => { //returns promise
+        let sucess = false
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({ sucess , errors: errors.array() });
             // return "Bakwass"
             //In the above code, we have set that if error.empty didn’t return a true value, then show a 400 bad request error and send the specific errors details.
         }
@@ -52,7 +53,7 @@ router.post('/cal', [ //checking the validation
                 //chekcing the email exist or not
                 //send the bad request
                 console.log(user)
-                return res.status(400).json({ errors: "This user already(email) exist in database" });
+                return res.status(400).json({sucess , errors: "This user already(email) exist in database" });
             }
 
             // creating a bycyrpt hash function 
@@ -76,9 +77,10 @@ router.post('/cal', [ //checking the validation
             //JWT is a URL generated which has a subpart as 1. header(in this case JWT_SECERT ,) 2. data / payload 3. signature
             //Every user who has putted its credential into the database has their diferrent value of signature generated
             const jwtData = jwt.sign(data, JWT_SECRET) //
-            res.json("Token: " + jwtData) //
-            // res.send(user)
+            sucess = true;
             // res.json(user)
+            res.json({sucess , jwtData}) //
+            // res.send(user)
 
 
 
@@ -89,7 +91,7 @@ router.post('/cal', [ //checking the validation
             console.error(error.message)
 
             // res.send(error.message + "pls try valid")
-            res.status(500).send("Pls try again later")
+            res.status(500).send( "Pls try again later")
 
         }
 
@@ -107,6 +109,7 @@ router.post('/login', [ //checking the validation
     body('password', 'password cannot be blank').isLength({ min: 5 }),
 ],
     async (req, res) => { //returns password
+        let sucess = false;
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -129,7 +132,8 @@ router.post('/login', [ //checking the validation
             const comparepassword = await bcrypt.compare(password , user.password)   // compare takes the string and hashstring as an input the hashstring is pasword hashstring present inside teh DB, and it checkes that automatically the req.body password and OG hashstring
 
             if(!comparepassword) {
-                return res.status(400).json({ errors: "PLease try to login with proper credential password dorsnt compared" });
+                sucess = false
+                return res.status(400).json({ sucess , errors: "PLease try to login with proper credential password dorsnt compared" });
 
             }
             const data = {
@@ -139,11 +143,22 @@ router.post('/login', [ //checking the validation
 
             //generating auth token we can wrtie secret key  in snv fiel 
              token = await user.generateAuthToken()
-             res.json(token)
-             console.log(token)
-            // const authtoken= jwt.sign(data, JWT_SECRET)
-            // res.json(authtoken)
-            console.log(user.id)
+            //  res.json(token)
+            //  console.log(token)
+
+             //seetinf it into the cookies
+             res.cookie("jwtoken" , token,{
+                expires: new Date(Date.now() + 25892000000),
+                httpOnly: true
+             });
+
+             
+            const authtoken= jwt.sign(data, JWT_SECRET)
+            sucess = true
+            res.json({sucess , authtoken})
+            console.log(authtoken)
+
+            console.log(user.id) //just consoling the user-id
         } catch (error) {
             console.error(error.message)
             res.status(500).send("Pls try again later")
@@ -169,13 +184,17 @@ router.post('/login', [ //checking the validation
 
 router.post('/getuser', fetchuser , async (req, res) =>{
     //fetchusr is useed to getthe user
+    
     try {
-         userId = req.user.id ; //have to fetch userid
+        let userId = req.user.id ; //have to fetch userid
+        // res.json(userId)
+        // console.log(userId)
         const user =  await User.findById(userId).select("-password")
         res.send(user)  //sending the use only except  the pasword
-
+        // console.log(user) //extra
+ 
     } catch (error) {
-        console.error(error.message);
+        console.error(error);
         res.status(500).send("Internal server Error");
     }
 

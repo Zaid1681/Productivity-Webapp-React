@@ -8,66 +8,44 @@ import "../App1.css"
 
 
 export default function LoginPage() {
-    const history = useHistory();  
+    let history = useHistory();
+ 
 
+    //body will send the data item but it will nto accept the data directly its need to convert it into the string
+    const [credentials , setCredentials] = useState({email: "" , password : ""})
 
-    const [name , setName] = useState("");
-    const [email , setEmail] = useState("");
-    const [password , setPassword] = useState("");
-
-    useEffect(()=>{
-        if(localStorage.getItem('user-info')){
-            history.push("/dashboard")
-        }
-    })
-
-    async function login(){
-        let item = {name , email , password}
-        console.log(item) ;
-       let result = await fetch("http://localhost:5000/api/user/login" ,
-        {
+    const handleSubmit =  async (e) =>{
+      
+        // console.log(e)
+        e.preventDefault();
+        const response = await fetch("/api/user/login" , {
             method: "POST" ,
-            // url: "/api/user/login",
             headers :{
-                'Content--Type' : 'application/json',
-                'Accept': "application/json, text/plain, */*",
-                "Accept" : "application/json",
-                'Origin' : 'http://localhost:5000'
+                'Content-Type' : 'application/json'
             },
-            body : JSON.stringify({item})
+            body : JSON.stringify({email:  credentials.email , password : credentials.password})
+    
         });
+        const json = await response.json()
+        console.log("hello!!!" + json)
+        console.log(json.sucess)
+        if(json.sucess){
+            //save the autheotkem and redirect
+            localStorage.setItem('token' , json.authtoken)
+            alert("User Login Successfully Welcome to dashboard!!")
+            history.push("/dashboard")
 
-        result = await result.json();
-        localStorage.setItem("user-info " , JSON.stringify(result))
-        history.push("/dashboard")
-
+        }
+        else{
+            alert("Invalid credential")
+        }
+    
     }
 
-    
-    //body will send the data item but it will nto accept the data directly its need to convert it into the string
-    // const [credentials , setCredentials] = useState({email: "" , password : ""})
+    const onChange =(e)=>{
+        setCredentials({...credentials , [e.target.name] : e.target.value})
 
-    // const handleSubmit =  async (e) =>{
-      
-    //     console.log(e)
-    //     e.preventDefault();
-    //     const response = await fetch("http://localhost:5000/api/user/login" , {
-    //         method: "POST" ,
-    //         headers :{
-    //             'Content-Type' : 'application/json'
-    //         },
-    //         body : JSON.stringify({email:  credentials.email , password : credentials.password})
-    
-    //     });
-    //     const json = await response.json()
-    //     console.log(json)
-    
-    // }
-
-    // const onChange =(e)=>{
-    //     setCredentials({...credentials , [e.target.name] : e.target.value})
-
-    // }
+    }
 
     // creating auseState in which we change the state of the data
     // const [user , setUser]   = useState({
@@ -127,28 +105,22 @@ export default function LoginPage() {
     return (
         <div className="text-center m-5-auto" >
             <h2 >Sign in to us</h2>
-            <form  method="POST" >
-                {/* <p>
-                    <label>Username</label><br/>
-                    <input type="text" name="name"  onChange={(e)=>{
-                        setName(e.target.value)
-                    }} />
-                </p> */}
-                <p>
+            <form  method="POST" onSubmit={handleSubmit} >
+               
+                {/* onChange={(e)=>{
+                        setEmail(e.target.value) }} */}
+                 <p> 
                     <label>email address </label><br/>
-                    <input type="text" name="email"  onChange={(e)=>{
-                        setEmail(e.target.value) }} />
+                    <input type="text" name="email" value={credentials.email } onChange={onChange}  />
                 </p>
                 <p>
                     <label>Password</label>
                     {/* <Link to="/forget-password"><label className="right-label">Forget password?</label></Link> */}
                     <br/>
-                    <input type="password" name="password" required onChange={(e) =>{
-                        setPassword(e.target.value)
-                    }}/>
+                    <input type="password" name="password" value={credentials.password} required onChange={onChange}/>
                 </p>
                 <Link to="/dashboard">
-                <button className="primary-button" onClick={login} >Log in</button>
+                <button className="primary-button" onClick={handleSubmit} >Log in</button>
             </Link>
             </form>
             <footer>
@@ -158,3 +130,54 @@ export default function LoginPage() {
         </div>
     )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   // const history = useHistory();  
+
+
+    // const [name , setName] = useState("");
+    // const [email , setEmail] = useState("");
+    // const [password , setPassword] = useState("");
+
+    // useEffect(()=>{
+    //     if(localStorage.getItem('user-info')){
+    //         history.push("/dashboard")
+    //     }
+    // })
+
+    // async function login(){
+    //     let item = { email , password}
+    //     console.log(item) ;
+    //    let result = await fetch("http://localhost:5000/api/user/login" ,
+    //     {
+    //         method: "POST" ,
+    //         // url: "/api/user/login",
+    //         headers :{
+    //             'Content--Type' : 'application/json',
+    //             'Accept': "application/json, text/plain, */*",
+    //             "Accept" : "application/json",
+    //             'Origin' : 'http://localhost:5000'
+    //         },
+    //         body : JSON.stringify({item})
+    //     });
+
+    //     result = await result.json();
+    //     localStorage.setItem("user-info " , JSON.stringify(result))
+    //     history.push("/dashboard")
+
+    // }

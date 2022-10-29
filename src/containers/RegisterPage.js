@@ -9,60 +9,116 @@ import "./App1.css"
 */
 
 export default function SignUpPage() {
-    const history = useHistory();
 
+    let history = useHistory();
+ 
 
-    const [user , setUser] = useState({
-        name : "" ,email : "" , password : ""
-    })
-    let name , value;
-    const handleInputs =(e)=>{
-        console.log(e) ;
-        name =  e.target.name; //email
-        value = e.target.value; //zaidkhan1681@gmail.com
-       setUser({... user, [name] : value}) //Here i am storin the data-value to the respected place of variable
-    }//hooks setting the value
+    //body will send the data item but it will nto accept the data directly its need to convert it into the string
+    const [credentials , setCredentials] = useState({name: " " ,email: "" , password : "", cpassword : ""})
 
-
-
-    //posting data to the database
-    const PostData = async(e) =>{
-        e.preventDefault(); //preventing from loading  of  dashboard
-        //here by using the object destructring we are not getting the data int he form of user.email or user.password 
-        //here we are simply fetching the data input by the user
-        const {name , email , password} = user //usr.name, user.email, user.pasword, object destructuring
-
-        //putting the data at the backend using fetch
-        //porpertiesof fetch is mthiod, header
-        //servre doesnt usderdtand json
-        const res = await fetch("/api/user/getuser",{
-            method : "POST" ,
-            header:{
-                "Content-Type" :"application/json"
-            } ,
-            body : JSON.stringify({
-                name,
-                email,
-                password
-            })
-
+    const handleSubmit =  async (e) =>{
+        e.preventDefault();
+        const { name, email , password} = credentials
+        const response = await fetch("/api/user/cal" , {
+            method: "POST" ,
+            headers :{
+                'Content-Type' : 'application/json'
+            },
+            body : JSON.stringify({name , email , password})
+    
         });
-
-        //checkign the data inputted by the user
-        const data = await res.json();
-        if (data.status === 400 || !data){
-            window.alert("Invalid Registration")
-            console.log("Invalid Registration")
+        const json = await response.json()
+        console.log("hello!!! " + json)
+        console.log(json.sucess)
+        if(json.sucess){
+            //save the autheotkem and redirect
+            localStorage.setItem('token' , json.authtoken)
+            alert("User Register Sucessfully!! please login")
+            history.push("/login")
 
         }
         else{
-            window.alert("Registration Success")
-            console.log("Registration Success")
-            history.push("/dashboard")
-
+            alert("Invalid credential")
         }
+    
+    }
+
+    const onChange =(e)=>{
+        setCredentials({...credentials , [e.target.name] : e.target.value})
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //thp code
+    // const history = useHistory();
+
+
+    // const [user , setUser] = useState({
+    //     name : "" ,email : "" , password : "" , cpassword:""
+    // })
+    // let name , value;
+    // const onChange =(e)=>{
+    //     console.log(e) ;
+    //     name =  e.target.name; //email
+    //     value = e.target.value; //zaidkhan1681@gmail.com
+    //    setUser({... user, [name] : value}) //Here i am storin the data-value to the respected place of variable
+    // }//hooks setting the value
+
+
+
+    // //posting data to the database
+    // const PostData = async(e) =>{
+    //     e.preventDefault(); //preventing from loading  of  dashboard
+    //     //here by using the object destructring we are not getting the data int he form of user.email or user.password 
+    //     //here we are simply fetching the data input by the user
+    //     const {name , email , password , cpassword} = user //usr.name, user.email, user.pasword, object destructuring
+
+    //     //putting the data at the backend using fetch
+    //     //porpertiesof fetch is mthiod, header
+    //     //servre doesnt usderdtand json
+    //     const res = await fetch("/api/user/cal",{
+    //         method : "POST" ,
+    //         header:{
+    //             "Content-Type" :"application/json"
+    //         } ,
+    //         body : JSON.stringify({
+    //             name,
+    //             email,
+    //             password,
+    //             cpassword
+    //         })
+
+    //     });
+
+    //     //checkign the data inputted by the user
+    //     const data = await res.json();
+    //     if (data.status === 400 || !data){
+    //         window.alert("Invalid Registration")
+    //         console.log("Invalid Registration")
+
+    //     }
+    //     else{
+    //         window.alert("Registration Success")
+    //         console.log("Registration Success")
+    //         history.push("/dashboard")
+
+    //     }
+
+    // }
 
     
 
@@ -73,21 +129,25 @@ export default function SignUpPage() {
             <form method= "POST" action="/home">
                 <p>
                     <label>Username</label><br/> 
-                    <input type="text" name="first_name"   onChange={handleInputs}/>
+                    <input type="text" name="name"   onChange={onChange}/>
                 </p>
                 <p>
                     <label>Email address</label><br/>
-                    <input type="email" name="email"  onChange={handleInputs}/>
+                    <input type="email" name="email"  onChange={onChange}/>
                 </p>
                 <p>
                     <label>Password</label><br/>
-                    <input type="password" name="password"  onChange={handleInputs} />
+                    <input type="password" name="password"  onChange={onChange} required minLength={5} />
+                </p>
+                <p>
+                    <label>Confirm Password</label><br/>
+                    <input type="password" name="cpassword"  onChange={onChange} required minLength={5} />
                 </p>
                 {/* <p>
                     <input type="checkbox" name="checkbox" id="checkbox" required /> <span>I agree all statements in <a href="https://google.com" target="_blank" rel="noopener noreferrer">terms of service</a></span>.
                 </p> */}
               <Link to="/dashboard">
-                <button className="primary-button" onClick={PostData}>Log in</button>
+                <button className="primary-button" onClick={handleSubmit} >Log in</button>
             </Link>
             </form>
             <footer>
