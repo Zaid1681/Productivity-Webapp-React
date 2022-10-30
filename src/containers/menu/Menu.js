@@ -2,11 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { IoMdAnalytics } from "react-icons/io";
-import { BiExclude , BiNotepad} from "react-icons/bi";
+import { BiExclude, BiNotepad } from "react-icons/bi";
 import { NavLink } from "react-router-dom";
 import ReactTooltip from "react-tooltip";
 import logo from "./../../images/logo.svg";
 import namedLogoLight from "./../../images/namedLogoDark.svg";
+import "./Menu.css"
 
 const MenuContainer = styled.div`
     width: 10%;
@@ -100,10 +101,27 @@ const DummyMenuOptions = styled.div`
 `;
 
 export default function Menu() {
+    //     function dropdown(){
+    //         return(
+
+    //         )
+
+    //     }
     return (
         <MenuContainer>
             <AppLogoContainer>
-                <img src={logo} alt="logo" />
+                <div class="dropdown">
+                    <img src={logo} alt="logo" className="mylogo" style={{ "width": "50px", "height": "50px ", "border-radius": "50%" }} />
+                    <a class="btn btn-secondary dropdown-toggle mybtn" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                    </a>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" href="#">Logout</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </div>
             </AppLogoContainer>
             <MenuOptions exact to="/dashboard">
                 <MdDashboard data-tip="" data-for="dashboard" />

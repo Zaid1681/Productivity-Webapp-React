@@ -13,6 +13,7 @@ import Notes from "./notes";
 import LandingPage from "../containers/LandingPage"
 import LoginPage from "./login/LoginPage"
 import SignUpPage from "./RegisterPage"
+import Navbar from "./Navbar/Navbar"
 
 
 
@@ -24,6 +25,17 @@ const AppContainer = styled.div`
 
 function App() {
     const isDarkTheme = useSelector((s) => s.settings.darkTheme);
+    //function to show the alert
+    // const{alert, setAlert} = useState(null)
+    // const showAlert = (message , type)=>{
+    //     setAlert({
+    //         msg : message,
+    //         type: type
+    //     })
+    //     setTimeout(()=>{
+    //         setAlert(null);
+    //     }, 1500)
+    // }
 
     if (!isMobile)
         return (
@@ -45,8 +57,9 @@ function App() {
                                         <TaskBoard />
                                     </>
                                 </Route>
-                                <Route path="/dashboard">
+                                <Route A path="/dashboard">
                                     <>
+                                       <Navbar/>
                                         <Dashboard />
                                         <TaskBoard />
                                     </>
